@@ -1,0 +1,52 @@
+---
+route: /language
+name: Language
+---
+
+# Language
+
+## Add Language pack
+
+In this article, we will guide you step by step to create a new language pack.
+
+Firstly, please go to **AdminCP > Localize** and click on the **Add Language** button. The, follow wizard and fill the info of your language pack. For example, to create a French language pack, you can use the language code as `fr` , Vendor name as __foxdev__ and App Name as _French Pack_.
+
+Fill the form as following
+
+![Add Language pack](/images/add-language-pack.png)
+
+On the server, the `packages/foxdev/lang-fr` directory will be generated automatically.
+
+## Edit Phrases
+
+Go to "Language" then choose "Export Phrase" from "French" as following image. Export phrases give you a translation file in csv format.
+
+![Edit phrases](/images/export-language-phrases.png)
+
+
+## Translate Phrase
+
+Open csv file by editor tool which support csv format Etc: Excel, Google Sheets, ...
+
+- key: the phrase id
+- locale: the locale of phrase
+- package: the package associate with phrase.
+- origin_text: Original phrase in english
+- text: actual translation you have to translate
+
+Note that you have not to change key, locale, package, and original_text. Add your translation to `text` and keep others.
+
+![Translate Phrase](/images/translate-phrases.png)
+
+
+# Import Phrases
+
+After translation, export the result to csv file then import to the server again.
+
+![Import Phrases](/images/import-phrases.png)
+
+## Export Language
+
+After updating and saving translation phrases on `.php` files, you can export language pack in **AdminCP**.
+
+Following instruction [/export-package](/export-package) to export language pack.

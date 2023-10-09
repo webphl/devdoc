@@ -1,0 +1,56 @@
+---
+name: Installation
+route: /backend/installation
+menu: Backend
+---
+
+# MetaFox Developer Installation
+
+This _MetaFox Developer_ package includes the MetaFox Core and some basic apps such as `Feed`, `Photos`, `Members`, `Blogs`, `Polls`.
+
+## System Requirements
+
+On the Development environment: since we have to build MetaFox Frontend, your server will need to have at least **4G RAM** as the [Recommendation for React](https://reacts.com/system-requirements/)
+
+This article will guide you how to set up Local Development with `docker`. Thus, the server will need to have `docker` and `docker-compose` installed first.
+
+## Download Source
+
+You can download Developer source from Client Area, under `MetaFox Dev license`. Then, extract the package on your server.
+
+For example, all source files will be uploaded to your server under `home/metafox` folder
+
+## Local Installation Steps
+
+Open Terminal and log in SSH to your server. It is necessary to note that you will need to log in with SSH user having permissions to run `docker`
+
+Then, run the following command
+
+```
+cd /home/metafox
+bash install.sh
+```
+
+After starting successfully, you can check the MetaFox site at `http://your_server_IP:8081` or `http://your_domain:8081`
+
+## Issues
+
+If you got issues with MetaFox Installation, please open new tickets in [Client Area](https://clients.phpfox.com/submitticket.php?step=2&deptid=1) with department of **3rd Party Developer** for further support.
+
+## References
+
+- [Laravel](https://laravel.com/docs)
+- [Authentication](https://laravel.com/docs/8.x/passport)
+- [Authorization](https://github.com/spatie/laravel-permission)
+- [Image Processing](http://image.intervention.io/)
+- [Debug Tool](https://github.com/laravel/tinker)
+- [Storage System](https://github.com/thephpleague/flysystem)
+- [Package Management](https://github.com/nWidart/laravel-modules)
+- [Globalization](https://github.com/spatie/laravel-translatable)
+- [Message Queue](http://vladimir-yuldashev/laravel-queue-rabbitmq)
+
+### Unit Test:
+
+- [Testing](https://laravel.com/docs/8.x/testing)
+- [Mockery](https://github.com/mockery/mockery)
+- [Faker](https://fakerphp.github.io/)

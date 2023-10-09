@@ -1,0 +1,188 @@
+---
+name: Routing
+menu: Backend
+route: /backend/routing
+---
+
+# Basic Routing
+
+MetaFox platform supports RESTful API routes.
+
+Routing defines the way how platform resolve URI request info into _Controller_ action,
+Generally, you can define routes of your app package in the `routes/api.php` for frontend api and `routes/api-amin.php` for admincp apis.
+
+This file re-uses Laravel Routing system at package-level, for futher information read out [laravel routing](https://laravel.com/docs/9.x/routing)
+
+**routes/api.php**
+
+```php
+<?php
+/**
+ * File name packages/metafox/blog/src/routes/api.php
+ * This file defines route that begin at /api/{ver}/ prefix
+ *
+ */
+
+// define namespace of main controller api gateway
+namespace MetaFox\Blog\Http\Controllers\Api;
+
+// use laravel routing
+use Illuminate\Support\Facades\Route;
+
+Route::controller(BlogController::class) // register controller
+  ->group(function () {
+      Route::patch('blog/sponsor/{id}', 'sponsor');
+      Route::patch('blog/feature/{id}', 'feature');
+      Route::patch('blog/approve/{id}', 'approve');
+      Route::put('blog/publish/{id}', 'publish');
+});
+
+
+Route::resource('blog', BlogController::class);
+```
+
+**routes/api-admin.php**
+
+```php
+<?php
+
+namespace MetaFox\Group\Http\Controllers\Api;
+
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('blog')
+    ->as('admin') // add this prefix to prevent dulicated route names with blog resource in `api.php`
+    ->resource('category', CategoryAdminController::class);
+
+Route::as('admin')
+    ->resource('blog',BlogAdminController::class);
+
+```
+
+## Route Method
+
+```php
+<?php
+// define route with http GET request
+Route::get($uri, $callback);
+
+//define route with http POST request
+Route::post($uri, $callback);
+
+//define route with http PUT request
+Route::put($uri, $callback);
+
+// define route with http PATCH request
+Route::patch($uri, $callback);
+
+ //define route with http POST request
+Route::delete($uri, $callback);
+
+//define route with http OPTION request
+Route::options($uri, $callback);
+```
+
+In above source code, naming convention of `\$callback` is `ControllerClassName@methodName`
+
+For example `Route::patch('blog/sponsor/{id}', 'BlogController@sponsor');` will dispatch the specified route to controller `BlogController` in namespace `MetaFox\Blog\Http\Controllers\Api` with method `sponsor`.
+
+## Route Group
+
+To organize API routes for better readibility, Laravel supports group of routes, using `Route::group` method.
+
+For examples, all routes in the route group have the same _Controller_ namespace, middleware and prefix.
+
+```php
+<?php
+Route::group([
+    'namespace'  => __NAMESPACE__, // define all of controller
+    'middleware' => 'auth:api',
+    'prefix'=> 'blog'
+], function () {
+  // all sub route have namespace
+});
+```
+
+## Route Resource
+
+Routing for RESTful API requests has a short method `Route::resouce($uri, $callback)`
+
+```php
+<?php
+
+Route::resource('blog', 'BlogController');
+
+```
+
+// it is the same to
+
+```php
+<?php
+
+Route::get('blog', 'BlogController@index');
+Route::get('blog/{id}', 'BlogController@show');
+Route::delete('blog/{id}', 'BlogController@destroy');
+Route::post('blog/{id}', 'BlogController@store');
+Route::put('blog/{id}', 'BlogController@update');
+```
+
+## Route Cache
+
+To optimize performance, Laravel keeps all routes in `route` cache. To apply new routes, you need to run `php artisan` command as below
+
+```bash
+
+# clear routes cache
+php artisan route:cache
+
+# checkout routes
+
+php artisan route:list
+```
+
+## Route Parameters
+
+Sometimes, you will need to capture segments of the URI within a route. For example, you may need to get a user's ID from the URL, you can define route parameters within `{id}`. If the parameters is optional and question mark (`?`) after `id`.
+
+For example
+
+```php
+<?php
+// api.php
+Route::controller(BlogController::class)
+  ->get('/user/{id}', 'show');
+
+Route::controller(BlogController::class)
+  ->get('/user/info/{id?}', 'info');
+
+// UserController.php
+
+<?php
+
+class UserController {
+
+  // get id=1 for /user/1
+  function show(int $id){
+    //
+  }
+
+  // get id=1 for /user/info/1
+  // id=null for /user/info
+  function info(?int $id){
+
+  }
+}
+
+```
+
+You can define multiple parameters, including both required and optional ones, for a certain route also. For example: we will define a route with required parameter `postId` and optional parameter `commentId` as below
+
+```php
+<?php
+Route::controller(CommentController::class)
+  ->get('/user/{postId}/comments/{comemntId?}', 'view');
+```
+
+## API Versioning
+
+In real world, when you have a long-time project with multiple versions released, the platform wraps all routes defined in `api.php` within a prefix `/api/{ver}`. Parameter `{ver}` will be passed to _Controller_ action to help us define correct response base on the given version.

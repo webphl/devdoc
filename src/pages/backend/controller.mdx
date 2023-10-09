@@ -1,0 +1,139 @@
+---
+name: Controller
+menu: Backend
+route: /backend/controller
+---
+
+
+# Controller
+
+Controllers can help group related request handling logic into a single class. *Controller* classes are located under `src\Http\Controllers` directory within your package directory.
+
+Here is the directory structure of the `metafox\blog` app
+
+```text
+packages/
+  metafox/
+    blog/
+      src/
+        Http/
+          Controllers/
+            Api/                   // Contains API Gateway classes
+              BlogController.php
+              CategoryController.php
+              v1/                  // Contains Controller classes for certain version
+                BlogController.php
+                CategoryController.php
+              v2/                  // Contains Controller classes for certain version
+                BlogController.php
+
+```
+
+Next step, we are going to take a deeper look into the *Gateway* class, the `BlogController` at `src/Http/Controllers/Api/BlogController.php`, which is extended from the abstract class `GatewayController`,
+
+```php
+<?php
+
+namespace MetaFox\Blog\Http\Controllers\Api;
+
+use MetaFox\Platform\Http\Controllers\Api\GatewayController;
+
+/**
+ * --------------------------------------------------------------------------
+ *  API Gateway
+ * --------------------------------------------------------------------------.
+ *
+ * This class solves API versioning problem.
+ * DO NOT IMPLEMENT ACTION HERE.
+ */
+
+/**
+ * Class CategoryController.
+ */
+class BlogController extends GatewayController
+{
+    /**
+     * @var string[]
+     */
+    protected $controllers = [
+        'v1'   => v1\BlogController::class,
+        'v2'   => v2\BlogController::class,
+    ];
+
+    // DO NOT IMPLEMENT ACTION HERE.
+}
+```
+
+The `BlogController` class defines its property `controllers` to associate 2 versions with 2 different `BlogController` classes.
+
+`GatewayController` class supports parsing the `ver` parameter from [routing](/backend/routing#api-versioning) and invoking the respective *Controller* class associated with that version
+
+For example, with the route `/api/v1/blog/18`, routing resolves to `MetaFox\Blog\Http\Controllers\Api\BlogController::show` with parameters `ver=v1` and `id=18`, `GatewayController` class is dispatched with the same `show` method, then forward the dispatched call to `v1/BlogController::show` method.
+
+## API Fallback
+
+If a method isn't defined in the *Controller* class of certain version, the call will be dispatched to the class method of the previous version.
+
+For example with the route `/api/v2/blog/18`, routing resolves `MetaFox\Blog\Http\Controllers\Api\BlogController::show` with parameters `ver=v2` and `id=18`.
+
+`GatewayController` class will try to dispatch the call with the same `show` method with parameters of `ver=v2` and `id=18` in `v2\BlogController` class as normal. But if there are no `show` methods in `v2\BlogController` class, the call will be forwarded to `v1\BlogController::show` method.
+
+## API Controller
+
+In this section, we will see how the *Controller* classes of certain API version are defined for main action controllers.
+
+Below is the sample `BlogController` class of version `v1`. This class is located under `src/Http/Controllers/Api/v1/BlogController.php`
+
+```php
+<?php
+
+// define namespace
+namespace MetaFox\Blog\Http\Controllers\Api\v1;
+
+/**
+ * Class BlogController.
+ * @ignore
+ * @codeCoverageIgnore
+ */
+class BlogController
+{
+  /**
+     * View Blog
+     *
+     * @param int $id
+     *
+     * @return BlogDetail
+     * @throws AuthenticationException
+     * @throws AuthorizationException
+     */
+    public function show(int $id): BlogDetail
+    {
+        $blog = $this->repository->viewBlog(user(), $id);
+
+        return new BlogDetail($blog);
+    }
+
+    // define other methods.
+}
+```
+
+## HTTP Request
+
+*HTTP Request* classes of an app are located under `src/Http/Requests` directory. Here is the directory structure of the `metafox\blog` app
+
+```text
+packages/
+  metafox/
+    blog/
+      src/
+        Http/
+          Requests/
+            v1/                       // contain Requests class for Api version `v1`
+              Blog/                   // For blog content
+                IndexRequest.php      // for browsing blog request
+                EditFormRequest.php   // for edit form request
+```
+
+You can read more about Laravel Docs about [HTTP Request](https://laravel.com/docs/9.x/requests) and [HTTP Responses](https://laravel.com/docs/9.x/responses).
+
+

@@ -1,0 +1,17 @@
+{
+  "installation": "Installation",
+  "category": "Category",
+  "commands": "Commands",
+  "content": "Content",
+  "controller": "Controller",
+  "datagrid": "Datagrid",
+  "eloquent": "Eloquent",
+  "event-list": "Support Events",
+  "event": "Event",
+  "form": "Form Builder",
+  "mailer": "Mailer",
+  "package": "Package",
+  "routing": "Routing",
+  "structure": "Directory Struture",
+  "interfaces": "Interfaces"
+}
